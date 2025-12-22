@@ -37,7 +37,7 @@ export default async function Footer() {
 
         {/* Buy me a coffee */}
         <a
-          href="https://www.buymeacoffee.com/YOUR_USERNAME"
+          href="https://github.com/03YugAgarwal/habit-tracker/issues"
           target="_blank"
           rel="noopener noreferrer"
           className="hover:text-[#f0f6fc] transition"
