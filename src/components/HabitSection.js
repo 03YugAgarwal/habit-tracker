@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Heatmap from "@/components/Heatmap";
 import HabitMenu from "./HabitMenu";
@@ -20,6 +20,25 @@ export default function HabitSection({ habit, data }) {
 
   const { showToast } = useToast();
   const todayDone = data[data.length - 1]?.count > 0;
+
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    }
+
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+
 
   function toggleToday() {
     startTransition(async () => {
@@ -80,17 +99,29 @@ export default function HabitSection({ habit, data }) {
         </div>
 
         <Heatmap data={data} baseColor={habit.color} />
+        {/* Menu */}
+        {menuOpen && (
+          <div ref={menuRef}>
+            <HabitMenu
+              onEdit={() => {
+                setMenuOpen(false);
+                setEditOpen(true);
+              }}
+              onAdd={() => {
+                setMenuOpen(false);
+                setAddOpen(true);
+              }}
+              onDelete={() => {
+                setMenuOpen(false);
+                setDeleteOpen(true);
+              }}
+            />
+          </div>
+        )}
       </div>
 
-      {/* Menu */}
-      {menuOpen && (
-        <HabitMenu
-          onClose={() => setMenuOpen(false)}
-          onEdit={() => setEditOpen(true)}
-          onAdd={() => setAddOpen(true)}
-          onDelete={() => setDeleteOpen(true)}
-        />
-      )}
+
+
 
       {/* Modals */}
       {editOpen && (

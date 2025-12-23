@@ -34,7 +34,7 @@ export const metadata = {
     title: "Habit Tracker",
     description:
       "A simple habit tracker inspired by GitHub contribution graphs. Track habits daily and visualize progress over time.",
-    url: "https://your-domain.com",
+    url: "https://habit.agarwalyug.com",
     siteName: "Habit Tracker",
     images: [
       {
