@@ -10,16 +10,46 @@ export default function EditHabitModal({ habit, onClose, onSaved }) {
   const [name, setName] = useState(habit.name);
   const [icon, setIcon] = useState(habit.icon);
   const [color, setColor] = useState(habit.color);
-  const [saving, setSaving] = useState(false);
 
+  // 👇 custom hex state
+  const isPreset = HABIT_COLORS.includes(habit.color);
+  const [customHex, setCustomHex] = useState(isPreset ? "" : habit.color);
+  const [hexError, setHexError] = useState("");
+
+  const [saving, setSaving] = useState(false);
   const { showToast } = useToast();
+
+  function isValidHex(value) {
+    return /^#([0-9a-fA-F]{6})$/.test(value);
+  }
+
+  function handleHexChange(value) {
+    setCustomHex(value);
+
+    if (!value) {
+      setHexError("");
+      return;
+    }
+
+    if (!isValidHex(value)) {
+      setHexError("Use format #RRGGBB");
+      return;
+    }
+
+    setHexError("");
+    setColor(value);
+  }
 
   async function save() {
     if (!name.trim()) {
       showToast("Habit name cannot be empty", "error");
       return;
     }
-    if (!name.trim()) return;
+
+    if (customHex && !isValidHex(customHex)) {
+      setHexError("Invalid hex color");
+      return;
+    }
 
     setSaving(true);
 
@@ -30,9 +60,7 @@ export default function EditHabitModal({ habit, onClose, onSaved }) {
         body: JSON.stringify({ name, icon, color }),
       });
 
-      if (!res.ok) {
-        throw new Error();
-      }
+      if (!res.ok) throw new Error();
 
       showToast("Habit updated successfully", "success");
       onSaved();
@@ -69,7 +97,7 @@ export default function EditHabitModal({ habit, onClose, onSaved }) {
               key={i}
               onClick={() => setIcon(i)}
               className={`w-9 h-9 flex items-center justify-center rounded-md border text-lg
-                ${icon === i ? "border-[#58a6ff] bg-[#21262d]" : "border-[#30363d]"}
+                ${icon === i ? "border-[#58a6ff] bg-[#21262d]" : "border-[#30363d] hover:bg-[#21262d]"}
               `}
             >
               {i}
@@ -77,18 +105,53 @@ export default function EditHabitModal({ habit, onClose, onSaved }) {
           ))}
         </div>
 
-        {/* Colors */}
+        {/* Preset colors */}
         <p className="text-sm text-[#c9d1d9] mb-2">Color</p>
-        <div className="grid grid-cols-8 gap-2 mb-5">
+        <div className="grid grid-cols-8 gap-2 mb-3">
           {HABIT_COLORS.map(c => (
             <button
               key={c}
-              onClick={() => setColor(c)}
-              className={`w-6 h-6 rounded-sm border ${color === c ? "border-white" : "border-[#30363d]"
-                }`}
+              onClick={() => {
+                setColor(c);
+                setCustomHex("");
+                setHexError("");
+              }}
+              className={`w-6 h-6 rounded-sm border ${
+                color === c ? "border-white" : "border-[#30363d]"
+              }`}
               style={{ backgroundColor: c }}
             />
           ))}
+        </div>
+
+        {/* Custom hex */}
+        <div className="mb-5">
+          <p className="text-sm text-[#c9d1d9] mb-1">
+            Custom hex
+          </p>
+
+          <div className="flex items-center gap-2">
+            <input
+              value={customHex}
+              onChange={e => handleHexChange(e.target.value)}
+              placeholder="#22c55e"
+              className="flex-1 rounded-md bg-[#0d1117] border border-[#30363d] px-3 py-2 text-sm text-[#c9d1d9]"
+            />
+
+            <div
+              className="w-8 h-8 rounded border border-[#30363d]"
+              style={{
+                backgroundColor:
+                  isValidHex(customHex) ? customHex : "transparent",
+              }}
+            />
+          </div>
+
+          {hexError && (
+            <p className="text-xs text-red-400 mt-1">
+              {hexError}
+            </p>
+          )}
         </div>
 
         {/* Actions */}
@@ -102,7 +165,7 @@ export default function EditHabitModal({ habit, onClose, onSaved }) {
           <button
             onClick={save}
             disabled={saving}
-            className="px-3 py-1 text-sm rounded-md bg-[#238636] text-white"
+            className="px-3 py-1 text-sm rounded-md bg-[#238636] text-white disabled:opacity-60"
           >
             Save
           </button>

@@ -10,15 +10,44 @@ export default function AddHabitModal({ open, onClose, onAdd }) {
   const [icon, setIcon] = useState(ICONS[0]);
   const [color, setColor] = useState(HABIT_COLORS[0]);
 
+  const [customHex, setCustomHex] = useState("");
+  const [hexError, setHexError] = useState("");
+
   if (!open) return null;
 
   function submit() {
     if (!name.trim()) return;
+
+    if (customHex && !isValidHex(customHex)) {
+      setHexError("Invalid hex color");
+      return;
+    }
+
     onAdd({ name, icon, color });
     onClose();
+
+    // reset
     setName("");
     setIcon(ICONS[0]);
     setColor(HABIT_COLORS[0]);
+    setCustomHex("");
+    setHexError("");
+  }
+
+  function handleHexChange(value) {
+    setCustomHex(value);
+    if (!value) {
+      setHexError("");
+      return;
+    }
+
+    if (!isValidHex(value)) {
+      setHexError("Use format #RRGGBB");
+      return;
+    }
+
+    setHexError("");
+    setColor(value);
   }
 
   return (
@@ -44,17 +73,7 @@ export default function AddHabitModal({ open, onClose, onAdd }) {
         <input
           value={name}
           onChange={e => setName(e.target.value)}
-          className="
-            w-full mb-4 rounded-md
-            bg-[#0d1117]
-            border border-[#30363d]
-            px-3 py-2 text-sm
-            text-[#c9d1d9]
-            placeholder:text-[#8b949e]
-            focus:outline-none
-            focus:ring-2
-            focus:ring-[#58a6ff]
-          "
+          className="w-full mb-4 rounded-md bg-[#0d1117] border border-[#30363d] px-3 py-2 text-sm text-[#c9d1d9] focus:outline-none focus:ring-2 focus:ring-[#58a6ff]"
           placeholder="e.g. Workout"
         />
 
@@ -66,13 +85,11 @@ export default function AddHabitModal({ open, onClose, onAdd }) {
               <button
                 key={i}
                 onClick={() => setIcon(i)}
-                className={`
-                  w-9 h-9 flex items-center justify-center rounded-md
-                  border text-lg
-                  ${icon === i
+                className={`w-9 h-9 flex items-center justify-center rounded-md border text-lg ${
+                  icon === i
                     ? "border-[#58a6ff] bg-[#21262d]"
-                    : "border-[#30363d] hover:bg-[#21262d]"}
-                `}
+                    : "border-[#30363d] hover:bg-[#21262d]"
+                }`}
               >
                 {i}
               </button>
@@ -80,25 +97,56 @@ export default function AddHabitModal({ open, onClose, onAdd }) {
           </div>
         </div>
 
-        {/* Color picker */}
-        <div className="mb-5">
+        {/* Preset colors */}
+        <div className="mb-3">
           <p className="text-sm text-[#c9d1d9] mb-2">Color</p>
           <div className="grid grid-cols-8 gap-2">
             {HABIT_COLORS.map(c => (
               <button
                 key={c}
-                onClick={() => setColor(c)}
-                className={`
-                  w-6 h-6 rounded-sm
-                  border
-                  ${color === c
-                    ? "border-white"
-                    : "border-[#30363d]"}
-                `}
+                onClick={() => {
+                  setColor(c);
+                  setCustomHex("");
+                  setHexError("");
+                }}
+                className={`w-6 h-6 rounded-sm border ${
+                  color === c ? "border-white" : "border-[#30363d]"
+                }`}
                 style={{ backgroundColor: c }}
               />
             ))}
           </div>
+        </div>
+
+        {/* Custom hex */}
+        <div className="mb-5">
+          <p className="text-sm text-[#c9d1d9] mb-1">
+            Custom hex
+          </p>
+
+          <div className="flex items-center gap-2">
+            <input
+              value={customHex}
+              onChange={e => handleHexChange(e.target.value)}
+              placeholder="#22c55e"
+              className="flex-1 rounded-md bg-[#0d1117] border border-[#30363d] px-3 py-2 text-sm text-[#c9d1d9] focus:outline-none focus:ring-2 focus:ring-[#58a6ff]"
+            />
+
+            {/* Preview */}
+            <div
+              className="w-8 h-8 rounded border border-[#30363d]"
+              style={{
+                backgroundColor:
+                  isValidHex(customHex) ? customHex : "transparent",
+              }}
+            />
+          </div>
+
+          {hexError && (
+            <p className="text-xs text-red-400 mt-1">
+              {hexError}
+            </p>
+          )}
         </div>
 
         {/* Actions */}
@@ -119,4 +167,8 @@ export default function AddHabitModal({ open, onClose, onAdd }) {
       </div>
     </div>
   );
+}
+
+function isValidHex(value) {
+  return /^#([0-9a-fA-F]{6})$/.test(value);
 }
