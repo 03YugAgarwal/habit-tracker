@@ -13,6 +13,9 @@ export default function HabitSection({ habit, data }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
+  const [localData, setLocalData] = useState(data);
+
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
@@ -41,17 +44,29 @@ export default function HabitSection({ habit, data }) {
 
 
   function toggleToday() {
-    startTransition(async () => {
-      await fetch(`/api/habits/${habit.id}/toggle`, { method: "POST" });
+    const todayIndex = localData.length - 1;
 
-      showToast(
-        todayDone ? "Marked as undone" : "Marked as done",
-        "success"
-      );
-
-      router.refresh();
+    setLocalData(prev => {
+      const copy = [...prev];
+      copy[todayIndex] = {
+        ...copy[todayIndex],
+        count: copy[todayIndex].count ? 0 : 1
+      };
+      return copy;
     });
+
+    fetch(`/api/habits/${habit.id}/toggle`, { method: "POST" })
+      .then(() =>
+        showToast(
+          todayDone ? "Marked as undone" : "Marked as done",
+          "success"
+        )
+      )
+      .catch(() => {
+        showToast("Failed to update", "error");
+      });
   }
+
 
   return (
     <>
@@ -98,7 +113,8 @@ export default function HabitSection({ habit, data }) {
           </button>
         </div>
 
-        <Heatmap data={data} baseColor={habit.color} />
+        <Heatmap data={localData} baseColor={habit.color} />
+
         {/* Menu */}
         {menuOpen && (
           <div ref={menuRef}>

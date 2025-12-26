@@ -9,11 +9,13 @@ export default function Heatmap({ data, baseColor }) {
 
     /* ---------- Auto-scroll to today ---------- */
     useEffect(() => {
-        if (scrollRef.current) {
+        const id = requestAnimationFrame(() => {
             scrollRef.current.scrollLeft =
                 scrollRef.current.scrollWidth;
-        }
+        });
+        return () => cancelAnimationFrame(id);
     }, []);
+
 
     /* ---------- Color scale ---------- */
     const getColor = count => {
