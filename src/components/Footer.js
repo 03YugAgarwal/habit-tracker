@@ -17,6 +17,7 @@ export default async function Footer() {
     .select({ count: sql`count(*)` })
     .from(habitLogs);
 
+    
   return (
     <footer className="border-t border-[#30363d] mt-12">
       <div className="max-w-6xl mx-auto px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-[#8b949e]">
