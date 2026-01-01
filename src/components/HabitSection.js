@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, useEffect, useRef } from "react";
+import { useState, useTransition, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Heatmap from "@/components/Heatmap";
 import HabitMenu from "./HabitMenu";
@@ -8,6 +8,7 @@ import EditHabitModal from "./EditHabitModal";
 import AddEntriesModal from "./AddEntriesModal";
 import DeleteHabitModal from "./DeleteHabitModal";
 import { useToast } from "./ToastManager";
+import { getCurrentStreak, getMaxStreak } from "@/lib/calculation-helper";
 
 export default function HabitSection({ habit, data }) {
   const router = useRouter();
@@ -25,6 +26,14 @@ export default function HabitSection({ habit, data }) {
   const todayDone = data[data.length - 1]?.count > 0;
 
   const menuRef = useRef(null);
+
+  const { currentStreak, maxStreak } = useMemo(() => {
+    return {
+      currentStreak: getCurrentStreak(localData),
+      maxStreak: getMaxStreak(localData),
+    };
+  }, [localData]);
+
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -111,6 +120,21 @@ export default function HabitSection({ habit, data }) {
           >
             ⋯
           </button>
+        </div>
+        <div className="flex gap-4 text-xs text-[#8b949e] mb-2">
+          <span>
+            🔥 <span className="text-[#f0f6fc] font-medium">
+              {currentStreak}
+            </span>{" "}
+            day streak
+          </span>
+
+          <span>
+            🏆 <span className="text-[#f0f6fc] font-medium">
+              {maxStreak}
+            </span>{" "}
+            best
+          </span>
         </div>
 
         <Heatmap data={localData} baseColor={habit.color} />
