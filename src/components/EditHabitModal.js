@@ -4,7 +4,17 @@ import { useState } from "react";
 import { HABIT_COLORS } from "@/lib/colors";
 import { useToast } from "@/components/ToastManager";
 
-const ICONS = ["🔥", "💪", "📚", "🧠", "🏃", "🧘", "💻", "🎯", "📝", "🥗"];
+const ICONS = [
+  "🔥","💪","🏃","🏋️","🧘","🚴",
+  "🧠","📚","📝","✍️","📖","🎓",
+  "💻","⌨️","📊","📈","📅","⏰",
+  "🎯","🏆","🚀","⭐","💯","⚡",
+  "🥗","🍎","🥦","💧","🍵","🍳",
+  "😴","🛌","🌙","🧖",
+  "🎨","🎵","🎧","📷",
+  "🌱","🌿","☀️","🕊️"
+];
+
 
 export default function EditHabitModal({ habit, onClose, onSaved }) {
   const [name, setName] = useState(habit.name);

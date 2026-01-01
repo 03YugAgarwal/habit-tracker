@@ -3,7 +3,17 @@
 import { useState } from "react";
 import { HABIT_COLORS } from "@/lib/colors";
 
-const ICONS = ["🔥", "💪", "📚", "🧠", "🏃", "🧘", "💻", "🎯", "📝", "🥗"];
+const ICONS = [
+  "🔥", "💪", "🏃", "🏋️", "🧘", "🚴",
+  "🧠", "📚", "📝", "✍️", "📖", "🎓",
+  "💻", "⌨️", "📊", "📈", "📅", "⏰",
+  "🎯", "🏆", "🚀", "⭐", "💯", "⚡",
+  "🥗", "🍎", "🥦", "💧", "🍵", "🍳",
+  "😴", "🛌", "🌙", "🧖",
+  "🎨", "🎵", "🎧", "📷",
+  "🌱", "🌿", "☀️", "🕊️"
+];
+
 
 export default function AddHabitModal({ open, onClose, onAdd }) {
   const [name, setName] = useState("");
@@ -85,11 +95,10 @@ export default function AddHabitModal({ open, onClose, onAdd }) {
               <button
                 key={i}
                 onClick={() => setIcon(i)}
-                className={`w-9 h-9 flex items-center justify-center rounded-md border text-lg ${
-                  icon === i
+                className={`w-9 h-9 flex items-center justify-center rounded-md border text-lg ${icon === i
                     ? "border-[#58a6ff] bg-[#21262d]"
                     : "border-[#30363d] hover:bg-[#21262d]"
-                }`}
+                  }`}
               >
                 {i}
               </button>
@@ -109,9 +118,8 @@ export default function AddHabitModal({ open, onClose, onAdd }) {
                   setCustomHex("");
                   setHexError("");
                 }}
-                className={`w-6 h-6 rounded-sm border ${
-                  color === c ? "border-white" : "border-[#30363d]"
-                }`}
+                className={`w-6 h-6 rounded-sm border ${color === c ? "border-white" : "border-[#30363d]"
+                  }`}
                 style={{ backgroundColor: c }}
               />
             ))}
